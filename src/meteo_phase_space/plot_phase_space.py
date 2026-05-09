@@ -99,7 +99,17 @@ def plot_phase_space(
         else:
             raise NotImplementedError(f"Spread type {spread_type} not implemented")
 
-        ax.plot(x_mid, y_mid, "ko-", linewidth=2, label="Central path", zorder=3)
+        month_ix = sorted(int(m) for m in x_mid.index.unique())
+        xs = np.array([float(x_mid.loc[m]) for m in month_ix], dtype=float)
+        ys = np.array([float(y_mid.loc[m]) for m in month_ix], dtype=float)
+        ax.plot(
+            np.r_[xs, xs[0]],
+            np.r_[ys, ys[0]],
+            "ko-",
+            linewidth=2,
+            label="Central path",
+            zorder=3,
+        )
         ax.errorbar(
             x_mid,
             y_mid,
@@ -112,10 +122,10 @@ def plot_phase_space(
             alpha=0.6,
             zorder=2,
         )
-        for i, m in enumerate(x_mid.index):
+        for m in month_ix:
             ax.annotate(
                 str(m),
-                (float(x_mid.iloc[i]), float(y_mid.iloc[i])),
+                (float(x_mid.loc[m]), float(y_mid.loc[m])),
                 textcoords="offset points",
                 xytext=(5, 5),
                 fontsize=9,
