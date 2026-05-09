@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "meteo_phase_space"
+version = "0.1.0"
+description = "Temperature-precipitation phase space and Köppen classification from Meteostat data"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+dependencies = [
+    "numpy>=1.23",
+    "pandas>=2.0",
+    "matplotlib>=3.7",
+    "meteostat>=1.6",
+    "tyro>=0.9",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "ruff>=0.4"]
+
+[project.scripts]
+meteo-phase-space = "meteo_phase_space.cli:main"
