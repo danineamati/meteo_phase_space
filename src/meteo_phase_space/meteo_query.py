@@ -8,7 +8,6 @@ from typing import Any
 
 import meteostat as ms
 import numpy as np
-import pandas as pd
 
 from .koppen import classify_koppen
 
@@ -26,7 +25,13 @@ def nearest_station_id(latitude: float, longitude: float) -> str:
     if nearby is None or nearby.empty:
         raise ValueError(f"No Meteostat station found near ({latitude}, {longitude})")
     station_id = str(nearby.index[0])
-    logger.debug("Nearest station id=%s to (%.4f, %.4f):\n%s", station_id, latitude, longitude, nearby.head())
+    logger.debug(
+        "Nearest station id=%s to (%.4f, %.4f):\n%s",
+        station_id,
+        latitude,
+        longitude,
+        nearby.head(),
+    )
     return station_id
 
 
@@ -45,7 +50,9 @@ def fetch_and_classify_station(
     ``station_id``, ``latitude``, ``display_name``, ``df``, ``normal_class``,
     ``official_normal_class``, ``official_normal_df``, ``history`` (year -> class).
     """
-    label_default = display_name if display_name is not None else f"Station {station_id}"
+    label_default = (
+        display_name if display_name is not None else f"Station {station_id}"
+    )
 
     data = ms.monthly(
         station_id,
@@ -54,17 +61,25 @@ def fetch_and_classify_station(
         parameters=["temp", "prcp"],
     ).fetch()
     if data.empty:
-        logger.warning("No monthly data for station %s in %s–%s", station_id, start_yr, end_yr)
+        logger.warning(
+            "No monthly data for station %s in %s-%s", station_id, start_yr, end_yr
+        )
         return None
 
     station = ms.stations.meta(station_id)
     logger.debug("Station meta: %s", station)
     lat_val = getattr(station, "latitude", None)
     lat = float(lat_val) if lat_val is not None else float("nan")
-    logger.info("Fetched station %s (lat=%.4f) %s–%s", station_id, lat, start_yr, end_yr)
+    logger.info(
+        "Fetched station %s (lat=%.4f) %s-%s", station_id, lat, start_yr, end_yr
+    )
 
     logger.debug("Monthly rows:\n%s", data)
-    logger.debug("Missing temp: %s, prcp: %s", data["temp"].isna().sum(), data["prcp"].isna().sum())
+    logger.debug(
+        "Missing temp: %s, prcp: %s",
+        data["temp"].isna().sum(),
+        data["prcp"].isna().sum(),
+    )
 
     data["temp"] = data["temp"].ffill().bfill()
     data["prcp"] = data["prcp"].fillna(0)
@@ -77,7 +92,9 @@ def fetch_and_classify_station(
     )[0]
     logger.debug("Derived normals Köppen class=%s:\n%s", normal_class, normals)
 
-    official_normals_ts = ms.normals(ms.Station(id=station_id), start_yr, end_yr, parameters=["temp", "prcp"])
+    official_normals_ts = ms.normals(
+        ms.Station(id=station_id), start_yr, end_yr, parameters=["temp", "prcp"]
+    )
     official_normals_df = official_normals_ts.fetch()
     logger.debug("Official normals:\n%s", official_normals_df)
 
@@ -102,7 +119,9 @@ def fetch_and_classify_station(
     else:
         t_years = np.stack([g["temp"].values for _, g in grouped])
         p_years = np.stack([g["prcp"].values for _, g in grouped])
-        yearly_classes = classify_koppen(np.asarray(t_years), np.asarray(p_years), np.full(len(years_sorted), lat))
+        yearly_classes = classify_koppen(
+            np.asarray(t_years), np.asarray(p_years), np.full(len(years_sorted), lat)
+        )
 
     history = dict(zip(years_sorted, list(yearly_classes)))
 

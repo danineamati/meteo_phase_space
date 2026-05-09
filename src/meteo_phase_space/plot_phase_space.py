@@ -54,7 +54,14 @@ def plot_phase_space(
         for year, k_class in history.items():
             year_df = df[df.index.year == year]
             color = KOPPEN_COLORS.get(str(k_class), "#000000")
-            ax.plot(year_df["temp"], year_df["prcp"], color=color, alpha=0.3, linewidth=1.5, zorder=1)
+            ax.plot(
+                year_df["temp"],
+                year_df["prcp"],
+                color=color,
+                alpha=0.3,
+                linewidth=1.5,
+                zorder=1,
+            )
             ax.scatter(
                 year_df["temp"],
                 year_df["prcp"],
@@ -67,14 +74,23 @@ def plot_phase_space(
             )
 
         legend_elements = [
-            Line2D([0], [0], color=KOPPEN_COLORS.get(cast(str, c), "#000000"), lw=2, label=str(c))
+            Line2D(
+                [0],
+                [0],
+                color=KOPPEN_COLORS.get(cast(str, c), "#000000"),
+                lw=2,
+                label=str(c),
+            )
             for c in used_classes
         ]
-        ax.legend(handles=legend_elements, title="Climate Classes", bbox_to_anchor=(1.05, 1), loc="upper left")
-
-        title = (
-            f"Yearly spaghetti: {loc}\nNormals class: {results['normal_class']}"
+        ax.legend(
+            handles=legend_elements,
+            title="Climate Classes",
+            bbox_to_anchor=(1.05, 1),
+            loc="upper left",
         )
+
+        title = f"Yearly spaghetti: {loc}\nNormals class: {results['normal_class']}"
         if results["official_normal_class"] is not None:
             title += f" | Official normals class: {results['official_normal_class']}"
         ax.set_title(title)
@@ -151,7 +167,9 @@ def plot_koppen_frequency(results: dict[str, Any]) -> Figure:
     history: dict[int, Any] = results["history"]
     fig, ax = plt.subplots(figsize=(10, 6))
     if not history:
-        ax.set_title(f"Köppen frequency: {_subtitle_station(results)}\n(No full calendar years)")
+        ax.set_title(
+            f"Köppen frequency: {_subtitle_station(results)}\n(No full calendar years)"
+        )
         ax.set_xlabel("Köppen classification")
         ax.set_ylabel("Number of years")
         fig.tight_layout()

@@ -51,8 +51,12 @@ class StationPlottingDataClass:
 
     should_plot_spaghetti: Annotated[bool, arg(aliases=("--plot-spaghetti",))] = True
     should_plot_normals_sd: Annotated[bool, arg(aliases=("--plot-normals-sd",))] = True
-    should_plot_normals_iqr: Annotated[bool, arg(aliases=("--plot-normals-iqr",))] = True
-    should_plot_koppen_frequency: Annotated[bool, arg(aliases=("--plot-koppen-frequency",))] = True
+    should_plot_normals_iqr: Annotated[bool, arg(aliases=("--plot-normals-iqr",))] = (
+        True
+    )
+    should_plot_koppen_frequency: Annotated[
+        bool, arg(aliases=("--plot-koppen-frequency",))
+    ] = True
 
 
 @dataclass
@@ -75,8 +79,12 @@ class Coords:
     show: bool = False
     should_plot_spaghetti: Annotated[bool, arg(aliases=("--plot-spaghetti",))] = True
     should_plot_normals_sd: Annotated[bool, arg(aliases=("--plot-normals-sd",))] = True
-    should_plot_normals_iqr: Annotated[bool, arg(aliases=("--plot-normals-iqr",))] = True
-    should_plot_koppen_frequency: Annotated[bool, arg(aliases=("--plot-koppen-frequency",))] = True
+    should_plot_normals_iqr: Annotated[bool, arg(aliases=("--plot-normals-iqr",))] = (
+        True
+    )
+    should_plot_koppen_frequency: Annotated[
+        bool, arg(aliases=("--plot-koppen-frequency",))
+    ] = True
 
 
 def _configure_logging(verbose: bool) -> None:
@@ -170,12 +178,17 @@ def _build_requested_figures(
         pairs.append(
             (
                 "normals_standard_deviation.png",
-                plot_phase_space(results, mode="normals", spread_type="standard deviation"),
+                plot_phase_space(
+                    results, mode="normals", spread_type="standard deviation"
+                ),
             )
         )
     if should_plot_normals_iqr:
         pairs.append(
-            ("normals_quantile.png", plot_phase_space(results, mode="normals", spread_type="quantile"))
+            (
+                "normals_quantile.png",
+                plot_phase_space(results, mode="normals", spread_type="quantile"),
+            )
         )
     if should_plot_koppen_frequency:
         pairs.append(("koppen_frequency.png", plot_koppen_frequency(results)))
@@ -265,9 +278,10 @@ def _entry(cli: StationPlottingDataClass | Coords) -> None:
 
 
 def main() -> None:
-    CliSpec = Annotated[StationPlottingDataClass, subcommand("station")] | Annotated[
-        Coords, subcommand("coords")
-    ]
+    CliSpec = (
+        Annotated[StationPlottingDataClass, subcommand("station")]
+        | Annotated[Coords, subcommand("coords")]
+    )
     cmd = tyro.cli(CliSpec)
     _entry(cmd)
 

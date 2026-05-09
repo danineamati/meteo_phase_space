@@ -39,7 +39,9 @@ KOPPEN_COLORS = {
 }
 
 
-def classify_koppen(temp: np.ndarray, precip: np.ndarray, lats: np.ndarray) -> np.ndarray:
+def classify_koppen(
+    temp: np.ndarray, precip: np.ndarray, lats: np.ndarray
+) -> np.ndarray:
     """
     Classifies climate zones using vectorized Köppen-Geiger logic (Beck et al. 2018).
 
@@ -54,8 +56,12 @@ def classify_koppen(temp: np.ndarray, precip: np.ndarray, lats: np.ndarray) -> n
     assert isinstance(temp, np.ndarray)
     assert isinstance(precip, np.ndarray)
     assert isinstance(lats, np.ndarray)
-    assert temp.shape == precip.shape, f"T shape {temp.shape} and P shape {precip.shape}"
-    assert temp.shape[0] == lats.shape[0], f"T shape {temp.shape} and lat shape {lats.shape}"
+    assert temp.shape == precip.shape, (
+        f"T shape {temp.shape} and P shape {precip.shape}"
+    )
+    assert temp.shape[0] == lats.shape[0], (
+        f"T shape {temp.shape} and lat shape {lats.shape}"
+    )
     assert len(temp.shape) == 2, f"T shape {temp.shape}"
 
     mat = temp.mean(axis=1)
@@ -125,7 +131,9 @@ def classify_koppen(temp: np.ndarray, precip: np.ndarray, lats: np.ndarray) -> n
     is_af = is_a & (p_dry >= 60)
     is_am = is_a & ~is_af & (p_dry >= 100 - map_total / 25)
     is_aw = is_a & ~is_af & ~is_am
-    classes = np.where(is_af, "Af", np.where(is_am, "Am", np.where(is_aw, "Aw", classes)))
+    classes = np.where(
+        is_af, "Af", np.where(is_am, "Am", np.where(is_aw, "Aw", classes))
+    )
 
     is_e = (t_hot <= 10) & ~is_b
     classes = np.where(
@@ -146,7 +154,14 @@ def classify_koppen(temp: np.ndarray, precip: np.ndarray, lats: np.ndarray) -> n
         is_td = zone_mask & (zone_letter == "D") & ~is_ta & ~is_tb & (t_cold < -38)
 
         for p_sub, p_let in [(is_s, "s"), (is_w, "w"), (is_f, "f")]:
-            for t_sub, t_let in [(is_ta, "a"), (is_tb, "b"), (is_tc, "c"), (is_td, "d")]:
-                classes = np.where(p_sub & t_sub, f"{zone_letter}{p_let}{t_let}", classes)
+            for t_sub, t_let in [
+                (is_ta, "a"),
+                (is_tb, "b"),
+                (is_tc, "c"),
+                (is_td, "d"),
+            ]:
+                classes = np.where(
+                    p_sub & t_sub, f"{zone_letter}{p_let}{t_let}", classes
+                )
 
     return classes
