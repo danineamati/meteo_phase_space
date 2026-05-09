@@ -31,10 +31,10 @@ Examples:
 
 ```bash
 # Known station id + readable label → default generated_plots/denver_co/…
-meteo-phase-space station --station-id 72565 --name "Denver, CO" --start-year 1990 --end-year 2025 --save-plots
+meteo-phase-space station --station-id 72585 --name "CA Bay" --start-year 1990 --end-year 2025 --save-plots
 
 # Same, but committed examples layout
-meteo-phase-space station --station-id 72565 --name "Denver, CO" --start-year 1990 --end-year 2025 --save-plots --plots-dir examples_plots
+meteo-phase-space station --station-id 72585 --name "CA Bay" --start-year 1990 --end-year 2025 --save-plots --plots-dir examples_plots
 
 # Nearest station to coordinates + label
 meteo-phase-space coords --lat 39.7392 --lon -104.9903 --name "Denver, CO" --save-plots --plots-dir examples_plots
@@ -44,6 +44,12 @@ meteo-phase-space station --station-id 72585 --show
 ```
 
 Output filenames include `spaghetti.png` (each year is plotted), `normals_standard_deviation.png`, `normals_quantile.png`, and `koppen_frequency.png`.
+
+Spaghetti plot:
+![Spaghetti plot for CA Bay Area](examples_plots/ca_bay/spaghetti.png)
+
+Normals plot:
+![Climate normals plot for CA Bay Area](examples_plots/ca_bay/normals_quantile.png)
 
 ## Python API
 
@@ -64,10 +70,14 @@ if result:
     save_figure(fig, plots_subdir("examples_plots", result["display_name"]) / "spaghetti.png")
 ```
 
-## Layout
+## Repository Layout
 
 - `src/meteo_phase_space/koppen.py` — Köppen colors + vectorized classifier
 - `src/meteo_phase_space/meteo_query.py` — Meteostat fetch and classification payloads
 - `src/meteo_phase_space/plot_phase_space.py` — figures + `save_figure`
 - `src/meteo_phase_space/plot_paths.py` — slug and per-location subdirectory paths
 - `src/meteo_phase_space/cli.py` — Tyro CLI entrypoint
+
+## License
+
+This code is provided under MIT License, but I would appreciate if you cite the repository when used. Please also report any bugs when found.
